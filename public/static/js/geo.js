@@ -373,7 +373,9 @@ export function screw ({ d = 4, len = 10, head = 'socket', x = 0, y = 0, z = 0, 
   const h0 = y - dir * k
   if (head === 'socket') {
     parts.push(revolve({ rOut: hd / 2, rIn: d * 0.45, y0: Math.min(y, h0), y1: Math.max(y, h0), nT: 6 * 5, nY: 1 }))
-    parts.push(cylY(d * 0.46, dir > 0 ? h0 : y - k * 0.4, dir > 0 ? y - k * 0.6 : h0, { seg: 6 }))
+    // fill the inner part of the bore, leaving a hex socket recess (depth 0.4k) at the outer end
+    const yf = y - dir * k * 0.6
+    parts.push(cylY(d * 0.46, Math.min(y, yf), Math.max(y, yf), { seg: 6 }))
   } else if (head === 'pan') {
     parts.push(lathe([[0, 0], [hd / 2, 0], [hd / 2, k * 0.6], [hd / 2 * 0.8, k], [0, k]], 32).translate(0, 0, 0))
     const g = parts[parts.length - 1]
