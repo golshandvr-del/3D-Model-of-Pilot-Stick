@@ -42,7 +42,8 @@ button { font-family: inherit; color: inherit; }
 .icon-btn:hover { border-color: var(--accent2); color: var(--accent2); }
 
 /* ---------- layout ---------- */
-#layout { position: relative; height: calc(100% - var(--top-h)); display: grid; grid-template-columns: var(--left-w) 1fr var(--right-w); }
+#layout { position: relative; height: calc(100% - var(--top-h)); display: grid; grid-template-columns: var(--left-w) 1fr var(--right-w); grid-template-rows: minmax(0, 1fr); }
+#layout > * { grid-row: 1; min-height: 0; min-width: 0; }
 .panel { background: var(--panel); border-left: 1px solid var(--panel-b); border-right: 1px solid var(--panel-b); overflow-y: auto; display: flex; flex-direction: column; z-index: 10; scrollbar-width: thin; scrollbar-color: #2a3a5c transparent; }
 #left-panel { grid-column: 3; }   /* RTL: first column is right side */
 #viewport { grid-column: 2; }
