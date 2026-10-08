@@ -480,11 +480,21 @@ function flyTo (target, pos, dur = 0.7) {
   S.tween = { t: 0, dur, t0: controls.target.clone(), t1: target.clone(), p0: camera.position.clone(), p1: pos.clone() }
 }
 const VIEWS = { iso: [0.85, 0.62, 1.0], front: [0, 0.08, 1], back: [0, 0.08, -1], right: [1, 0.08, 0], left: [-1, 0.08, 0], top: [0, 1, 0.002], bottom: [0, -1, 0.002] }
+function modelFrame () {
+  // frame the assembled model from its real bounding box (explode-independent: uses rest state)
+  const box = new THREE.Box3()
+  for (const m of S.b.meshes()) if (effVisible(m)) box.expandByObject(m)
+  if (box.isEmpty()) return S.b.focus
+  const c = box.getCenter(new THREE.Vector3())
+  const r = box.getSize(new THREE.Vector3()).length() / 2
+  const vFov = THREE.MathUtils.degToRad(camera.fov / 2)
+  const hFov = Math.atan(Math.tan(vFov) * camera.aspect)
+  return { target: c, dist: (r * 1.08) / Math.sin(Math.min(vFov, hFov)) }
+}
 function setView (name, anim = true) {
-  const f = S.b?.focus || { target: new THREE.Vector3(0, 120, 0), dist: 520 }
+  const f = S.b ? modelFrame() : { target: new THREE.Vector3(0, 120, 0), dist: 520 }
   const d = new THREE.Vector3(...VIEWS[name]).normalize()
-  const k = camera.aspect < 1 ? 1 / camera.aspect : 1
-  const pos = f.target.clone().addScaledVector(d, f.dist * Math.min(k, 1.9))
+  const pos = f.target.clone().addScaledVector(d, f.dist)
   if (anim) flyTo(f.target, pos); else { controls.target.copy(f.target); camera.position.copy(pos) }
   $$('[data-view]').forEach((b) => b.classList.toggle('active', b.dataset.view === name))
 }
